@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react'
 // Change to '/' if you add a custom domain in Pages settings
 export default defineConfig({
   plugins: [react()],
-  base: '/velqein.com/',
+  base: '/Annapurna_Kitchen/',
 })
