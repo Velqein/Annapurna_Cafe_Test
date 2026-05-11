@@ -11,7 +11,7 @@ export default function IPhoneFrame({ children, screenBg = '#F7F5F0' }) {
         background: '#111',
         boxShadow: '0 0 0 1.5px #555, 0 0 0 3px #2a2a2a, 0 30px 80px rgba(0,0,0,0.55), inset 0 0 0 1px #444',
         pointerEvents: 'none',
-        zIndex: 20,
+        zIndex: 1,
       }} />
 
       {/* dynamic island */}
@@ -45,6 +45,7 @@ export default function IPhoneFrame({ children, screenBg = '#F7F5F0' }) {
         borderRadius: 48,
         background: screenBg,
         overflow: 'hidden',
+        zIndex: 10,
       }}>
         {children}
       </div>
