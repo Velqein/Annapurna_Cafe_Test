@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { menuData, categories } from '../data/menuData'
 import { useCart } from '../context/CartContext'
+import { menuImages } from '../assets/images/menuImages'
+import bannerPaneerFriedRice from '../assets/images/banners/Banner_Paneer_fired_Rice.png'
+import bannerKurkureMomos    from '../assets/images/banners/Banner_Kurkure_Momos.png'
+import bannerSchezwanNoodles from '../assets/images/banners/Banner_Schezwan_noodles.png'
 
 const C = {
   cream:  '#F7F5F0',
@@ -117,9 +121,9 @@ const categoryIcons = { noodles: NoodleIcon, rice: RiceIcon, momos: MomoIcon, si
 
 /* ─── Banner data ────────────────────────────────────────────────────────────── */
 const BANNERS = [
-  { badge: "TODAY'S BEST SELLER", name: 'Schezwan\nNoodles',    price: '₹169', type: 'noodles', tagColor: C.blue,   blobColor: C.yellow,  bg: 'linear-gradient(135deg,#FFF8EE,#FFF3DC)', nameColor: '#3a8a35' },
-  { badge: 'MOST LOVED',          name: 'Paneer\nFried Rice',   price: '₹179', type: 'rice',    tagColor: C.green,  blobColor: C.sage,    bg: 'linear-gradient(135deg,#F2FBF2,#E6F7E6)', nameColor: C.blue   },
-  { badge: "CHEF'S SPECIAL",      name: 'Chilli\nPaneer',       price: '₹229', type: 'side',    tagColor: C.orange, blobColor: '#FFCCC0', bg: 'linear-gradient(135deg,#FFF5F0,#FFE8E0)', nameColor: C.orange },
+  { badge: 'MOST LOVED',          name: 'Paneer\nFried Rice',  price: '₹179', img: bannerPaneerFriedRice, tagColor: C.green,  blobColor: C.sage,    nameColor: C.blue    },
+  { badge: 'CRISPY SPECIAL',      name: 'Kurkure\nMomos',      price: '₹169', img: bannerKurkureMomos,    tagColor: C.orange, blobColor: '#FFCCC0', nameColor: C.orange  },
+  { badge: "TODAY'S BEST SELLER", name: 'Schezwan\nNoodles',   price: '₹169', img: bannerSchezwanNoodles, tagColor: C.blue,   blobColor: C.yellow,  nameColor: '#3a8a35' },
 ]
 
 /* ─── Food Card ──────────────────────────────────────────────────────────────── */
@@ -139,11 +143,14 @@ function FoodCard({ item }) {
         flexShrink: 0,
       }}
     >
-      <div style={{ background: 'linear-gradient(135deg,#FFF8F0,#FFF0E8)', height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+      <div style={{ background: 'linear-gradient(135deg,#FFF8F0,#FFF0E8)', height: 100, position: 'relative', overflow: 'hidden' }}>
+        {menuImages[item.imgKey]
+          ? <img src={menuImages[item.imgKey]} alt={item.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}/>
+          : <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FoodImg type={item.type} size={75}/></div>
+        }
         <div style={{ position: 'absolute', top: 6, right: 6, background: C.yellow, borderRadius: 8, padding: '2px 7px', fontSize: 9, fontWeight: 700, color: C.blue, fontFamily: "'Poppins',sans-serif", letterSpacing: '0.05em' }}>
           {item.tag || 'POPULAR'}
         </div>
-        <FoodImg type={item.type} size={75}/>
       </div>
       <div style={{ padding: '8px 12px 12px' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -368,36 +375,34 @@ export default function MenuPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -40 }}
                 transition={{ duration: 0.38, ease: 'easeInOut' }}
-                style={{
-                  position: 'absolute', inset: 0,
-                  background: banner.bg,
-                  padding: '18px 16px 18px 22px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                }}
+                style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}
               >
+                {/* banner photo */}
+                <img
+                  src={banner.img}
+                  alt={banner.name}
+                  loading="lazy"
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+                />
+                {/* left gradient overlay for text readability */}
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,rgba(255,255,255,0.92) 0%,rgba(255,255,255,0.65) 52%,rgba(255,255,255,0) 100%)' }}/>
+
                 {/* blob accent */}
-                <div style={{ position: 'absolute', right: -20, top: -20, width: 160, height: 160, background: banner.blobColor, borderRadius: '60% 40% 55% 45%', opacity: 0.5 }}/>
-                <div style={{ position: 'absolute', top: 12, right: 90, opacity: 0.4 }}><Dots n={3} opacity={0.3}/></div>
+                <div style={{ position: 'absolute', right: -20, top: -20, width: 160, height: 160, background: banner.blobColor, borderRadius: '60% 40% 55% 45%', opacity: 0.25 }}/>
+                <div style={{ position: 'absolute', top: 12, right: 90, opacity: 0.35 }}><Dots n={3} opacity={0.3}/></div>
 
                 {/* text */}
-                <div style={{ zIndex: 2, flex: 1 }}>
-                  <div style={{ background: banner.tagColor, borderRadius: 8, padding: '3px 10px', display: 'inline-block', marginBottom: 7 }}>
-                    <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: 9, fontWeight: 700, color: 'white', letterSpacing: '0.08em' }}>{banner.badge}</span>
+                <div style={{ position: 'relative', zIndex: 2, padding: '18px 16px 18px 22px', height: '100%', display: 'flex', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ background: banner.tagColor, borderRadius: 8, padding: '3px 10px', display: 'inline-block', marginBottom: 7 }}>
+                      <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: 9, fontWeight: 700, color: 'white', letterSpacing: '0.08em' }}>{banner.badge}</span>
+                    </div>
+                    <div style={{ fontFamily: "'Caveat',cursive", fontSize: 22, fontWeight: 700, color: banner.nameColor, lineHeight: 1.1, marginBottom: 8, whiteSpace: 'pre-line' }}>
+                      {banner.name}
+                    </div>
+                    <div style={{ fontFamily: "'Bungee',sans-serif", fontSize: 20, color: C.blue }}>{banner.price}</div>
                   </div>
-                  <div style={{ fontFamily: "'Caveat',cursive", fontSize: 22, fontWeight: 700, color: banner.nameColor, lineHeight: 1.1, marginBottom: 8, whiteSpace: 'pre-line' }}>
-                    {banner.name}
-                  </div>
-                  <div style={{ fontFamily: "'Bungee',sans-serif", fontSize: 20, color: C.blue }}>{banner.price}</div>
                 </div>
-
-                {/* food image */}
-                <motion.div
-                  style={{ zIndex: 2, marginRight: -4 }}
-                  animate={{ y: [0,-6,0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <FoodImg type={banner.type} size={120}/>
-                </motion.div>
               </motion.div>
             </AnimatePresence>
           </div>

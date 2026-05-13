@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '../context/CartContext'
+import { menuImages } from '../assets/images/menuImages'
 
 const C = {
   cream:  '#F7F5F0',
@@ -85,10 +86,12 @@ function CartItemRow({ item, qty }) {
       <div style={{
         width: 64, height: 64, borderRadius: 14,
         background: 'linear-gradient(135deg,#FFF8F0,#FFF0E8)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        flexShrink: 0,
+        overflow: 'hidden', flexShrink: 0,
       }}>
-        <FoodImg type={item.type} size={52}/>
+        {menuImages[item.imgKey]
+          ? <img src={menuImages[item.imgKey]} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}/>
+          : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FoodImg type={item.type} size={52}/></div>
+        }
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
