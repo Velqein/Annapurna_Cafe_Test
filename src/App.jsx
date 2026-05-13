@@ -2,6 +2,7 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import HomePage from './pages/HomePage'
 import MenuPage from './pages/MenuPage'
+import CartPage from './pages/CartPage'
 import GamePage from './pages/GamePage'
 import AboutPage from './pages/AboutPage'
 
@@ -25,6 +26,7 @@ export default function App() {
       <Routes location={location} key={location.pathname}>
         <Route path="/"      element={<PageWrapper><HomePage /></PageWrapper>} />
         <Route path="/menu"  element={<PageWrapper><MenuPage /></PageWrapper>} />
+        <Route path="/cart"  element={<PageWrapper><CartPage /></PageWrapper>} />
         <Route path="/game"  element={<PageWrapper><GamePage /></PageWrapper>} />
         <Route path="/about" element={<PageWrapper><AboutPage /></PageWrapper>} />
       </Routes>

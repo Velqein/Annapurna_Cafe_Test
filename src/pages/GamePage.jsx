@@ -172,7 +172,7 @@ export default function GamePage() {
           <motion.button
             style={{ width: 36, height: 36, borderRadius: '50%', background: C.card, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.10)', flexShrink: 0 }}
             whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }}
-            onClick={() => navigate('/menu')}
+            onClick={() => navigate('/cart')}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M9 2L4 7L9 12" stroke={C.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

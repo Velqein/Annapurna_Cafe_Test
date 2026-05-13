@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { menuData, categories } from '../data/menuData'
+import { useCart } from '../context/CartContext'
 
 const C = {
   cream:  '#F7F5F0',
@@ -123,6 +124,10 @@ const BANNERS = [
 
 /* ─── Food Card ──────────────────────────────────────────────────────────────── */
 function FoodCard({ item }) {
+  const { addItem, removeItem, getQty } = useCart()
+  const qty = getQty(item)
+  const isNonVeg = item.tag === 'NON-VEG'
+
   return (
     <motion.div
       whileHover={{ y: -4, boxShadow: '0 10px 28px rgba(31,69,145,0.16)' }}
@@ -134,21 +139,42 @@ function FoodCard({ item }) {
         flexShrink: 0,
       }}
     >
-      <div style={{ background: 'linear-gradient(135deg,#FFF8F0,#FFF0E8)', height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+      <div style={{ background: 'linear-gradient(135deg,#FFF8F0,#FFF0E8)', height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
         <div style={{ position: 'absolute', top: 6, right: 6, background: C.yellow, borderRadius: 8, padding: '2px 7px', fontSize: 9, fontWeight: 700, color: C.blue, fontFamily: "'Poppins',sans-serif", letterSpacing: '0.05em' }}>
           {item.tag || 'POPULAR'}
         </div>
-        <FoodImg type={item.type} size={80}/>
+        <FoodImg type={item.type} size={75}/>
       </div>
-      <div style={{ padding: '10px 12px 12px' }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: C.blue, fontFamily: "'Poppins',sans-serif", lineHeight: 1.3, marginBottom: 8, minHeight: 30 }}>
-          {item.name}
+      <div style={{ padding: '8px 12px 12px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 6 }}>
+          <div style={{ fontSize: 11.5, fontWeight: 600, color: C.blue, fontFamily: "'Poppins',sans-serif", lineHeight: 1.3, flex: 1, paddingRight: 4, minHeight: 28 }}>
+            {item.name}
+          </div>
+          <div style={{ width: 10, height: 10, borderRadius: 2, border: `1.5px solid ${isNonVeg ? '#C0392B' : '#27AE60'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: isNonVeg ? '#C0392B' : '#27AE60' }}/>
+          </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: C.green, fontFamily: "'Poppins',sans-serif" }}>₹{item.price}</span>
-          <div style={{ width: 10, height: 10, borderRadius: 2, border: `1.5px solid ${item.tag === 'NON-VEG' ? '#C0392B' : '#27AE60'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: 5, height: 5, borderRadius: '50%', background: item.tag === 'NON-VEG' ? '#C0392B' : '#27AE60' }}/>
-          </div>
+          {qty === 0 ? (
+            <motion.button
+              whileTap={{ scale: 0.88 }}
+              onClick={() => addItem(item)}
+              style={{
+                background: C.blue, border: 'none', cursor: 'pointer',
+                borderRadius: 10, padding: '4px 10px',
+                fontFamily: "'Poppins',sans-serif", fontSize: 11, fontWeight: 700, color: 'white',
+              }}
+            >+ ADD</motion.button>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', background: C.blue, borderRadius: 10, overflow: 'hidden' }}>
+              <motion.button whileTap={{ scale: 0.82 }} onClick={() => removeItem(item)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'white', fontSize: 16, fontWeight: 700, lineHeight: 1, padding: '3px 7px' }}>−</motion.button>
+              <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: 12, fontWeight: 700, color: 'white', minWidth: 16, textAlign: 'center' }}>{qty}</span>
+              <motion.button whileTap={{ scale: 0.82 }} onClick={() => addItem(item)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'white', fontSize: 16, fontWeight: 700, lineHeight: 1, padding: '3px 7px' }}>+</motion.button>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
@@ -173,6 +199,7 @@ function MenuSection({ data, sectionRef }) {
 /* ─── MENU PAGE ──────────────────────────────────────────────────────────────── */
 export default function MenuPage() {
   const navigate = useNavigate()
+  const { totalItems, totalPrice } = useCart()
   const [activeCat, setActiveCat] = useState('noodles')
   const [currentBanner, setCurrentBanner] = useState(0)
 
@@ -274,7 +301,29 @@ export default function MenuPage() {
             </div>
           </div>
 
-          <div style={{ width: 38 }}/>
+          <motion.div
+            whileTap={{ scale: 0.92 }}
+            onClick={() => totalItems > 0 && navigate('/cart')}
+            style={{
+              width: 38, height: 38, borderRadius: 19,
+              background: totalItems > 0 ? C.yellow : 'white',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 2px 10px rgba(31,69,145,0.13)',
+              cursor: totalItems > 0 ? 'pointer' : 'default',
+              flexShrink: 0, position: 'relative',
+            }}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke={C.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <line x1="3" y1="6" x2="21" y2="6" stroke={C.blue} strokeWidth="2" strokeLinecap="round"/>
+              <path d="M16 10a4 4 0 01-8 0" stroke={C.blue} strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            {totalItems > 0 && (
+              <div style={{ position: 'absolute', top: -3, right: -3, width: 17, height: 17, borderRadius: '50%', background: C.orange, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: 9, fontWeight: 700, color: 'white' }}>{totalItems}</span>
+              </div>
+            )}
+          </motion.div>
         </div>
 
         {/* category chips */}
@@ -374,35 +423,49 @@ export default function MenuPage() {
 
       </div>
 
-      {/* ── Fixed PLAY GAME bar ── */}
-      <div style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 25,
-        background: 'rgba(247,245,240,0.97)', backdropFilter: 'blur(12px)',
-        borderTop: '1px solid rgba(31,69,145,0.08)',
-        padding: '12px 20px 16px',
-      }}>
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          whileHover={{ scale: 1.02 }}
-          onClick={() => navigate('/game')}
-          style={{
-            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-            background: C.blue, border: 'none', cursor: 'pointer',
-            borderRadius: 50, padding: '14px 0',
-            boxShadow: '0 8px 24px rgba(31,69,145,0.28)',
-          }}
-        >
-          <svg width="22" height="16" viewBox="0 0 24 18" fill="none">
-            <rect x="1" y="3" width="22" height="12" rx="6" stroke="white" strokeWidth="1.8" fill="none"/>
-            <path d="M6 9H10M8 7V11" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
-            <circle cx="15" cy="8" r="1.5" fill="white"/>
-            <circle cx="18" cy="10" r="1.5" fill="white"/>
-          </svg>
-          <span style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 15, color: 'white', letterSpacing: '0.06em' }}>
-            PLAY GAME &amp; WIN
-          </span>
-        </motion.button>
-      </div>
+      {/* ── Floating View Cart bar (shows when cart has items) ── */}
+      <AnimatePresence>
+        {totalItems > 0 && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 26 }}
+            style={{
+              position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 25,
+              background: 'rgba(247,245,240,0.97)', backdropFilter: 'blur(12px)',
+              borderTop: '1px solid rgba(31,69,145,0.08)',
+              padding: '12px 20px 16px',
+            }}
+          >
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate('/cart')}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: C.blue, border: 'none', cursor: 'pointer',
+                borderRadius: 50, padding: '12px 20px',
+                boxShadow: '0 8px 24px rgba(31,69,145,0.28)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ background: C.yellow, borderRadius: 50, width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 11, color: C.blue }}>{totalItems}</span>
+                </div>
+                <span style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 600, fontSize: 12, color: 'rgba(255,255,255,0.78)', letterSpacing: '0.04em' }}>
+                  {totalItems === 1 ? '1 item' : `${totalItems} items`}
+                </span>
+              </div>
+              <span style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14, color: 'white', letterSpacing: '0.06em' }}>
+                VIEW CART
+              </span>
+              <span style={{ fontFamily: "'Bungee',sans-serif", fontSize: 14, color: 'white' }}>
+                ₹{totalPrice}
+              </span>
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
